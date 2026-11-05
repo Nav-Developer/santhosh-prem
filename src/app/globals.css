@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+:root {
+  /* Black + Acid Lime (old var names kept so other components work) */
+  --void-950: #0a0a0a;
+  --void-900: #111111;
+  --void-800: #1a1a1a;
+  --void-700: #262626;
+  --violet-glow: #c6ff00;
+  --violet-soft: #d9ff4d;
+  --violet-pale: #eaffa0;
+  --blue-glow: #9be000;
+  --text-main: #f4f4ef;
+
+  --wine-950: var(--void-950);
+  --wine-900: var(--void-900);
+  --wine-800: var(--void-800);
+  --wine-700: var(--void-700);
+  --wine-600: var(--void-800);
+  --gold-400: var(--violet-soft);
+  --copper: var(--blue-glow);
+  --cream-200: var(--text-main);
+
+  --cream: var(--void-950);
+  --ink: var(--text-main);
+}
+
+@theme inline {
+  --color-void-950: var(--void-950);
+  --color-void-900: var(--void-900);
+  --color-void-800: var(--void-800);
+  --color-glow: var(--violet-glow);
+  --color-soft: var(--violet-soft);
+  --color-pale: var(--violet-pale);
+  --color-blue-glow: var(--blue-glow);
+
+  --color-wine-950: var(--wine-950);
+  --color-wine-800: var(--wine-800);
+  --color-wine-600: var(--wine-600);
+  --color-gold-400: var(--gold-400);
+  --color-copper: var(--copper);
+  --color-cream-200: var(--cream-200);
+}
+
+body {
+  background-color: var(--void-950);
+  color: var(--ink);
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+.font-display {
+  font-family: Impact, "Anton", "Arial Narrow Bold", sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.text-outline {
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255, 255, 255, 0.9);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.glass-strong {
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid rgba(198, 255, 0, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.text-gradient,
+.gradient-text {
+  background: linear-gradient(90deg, #eaffa0, #c6ff00 50%, #9be000);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glow-electric {
+  box-shadow: 0 0 28px rgba(198, 255, 0, 0.45);
+}
+
+.caret {
+  display: inline-block;
+  width: 0.08em;
+  height: 0.85em;
+  margin-left: 0.12em;
+  vertical-align: -0.05em;
+  background: #c6ff00;
+  animation: blink 1s steps(2, start) infinite;
+}
+@keyframes blink {
+  to {
+    visibility: hidden;
+  }
+}
+
+.field {
+  flex: 1;
+  min-width: 0;
+  border-radius: 9999px;
+  background: var(--void-800);
+  padding: 0.875rem 1.25rem;
+  font-size: 0.875rem;
+  color: var(--ink);
+  outline: none;
+}
+.field:focus {
+  box-shadow: 0 0 0 2px var(--violet-glow);
+}
