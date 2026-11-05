@@ -15,8 +15,7 @@ const links: NavLink[] = [
 
 const JOIN: NavLink = {
   label: "Join Now",
-  href: "/#coaching",
-  section: "coaching",
+  href: "/join",
 };
 const sectionIds = links.flatMap((l) => (l.section ? [l.section] : []));
 

@@ -1,3 +1,9 @@
 export const WHATSAPP_NUMBER = "919994859178";
 export const ALTERNATE_WHATSAPP_NUMBER = "919994859178";
-export const CONTACT_EMAIL = "Santhosh Prem rc2006@gmail.com";
+export const CONTACT_EMAIL = "SanthoshPremrc2006@gmail.com";
+export const YOUTUBE = "https://www.youtube.com/@santhosh_prem";
+export const INSTAGRAM = "https://www.instagram.com/santhosh_prem/";
+export const WEBSITE_URL = "https://www.naveenkumar.site";
+export const DEV_INSTAGRAM = "https://www.instagram.com/nk_freaky/";
+export const WORDS = ["Train", "Eat", "Sleep", "Repeat"];
+export const FITNANBA = "https://www.instagram.com/fitnanba_/";
