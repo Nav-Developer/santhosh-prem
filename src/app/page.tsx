@@ -1,7 +1,7 @@
 import AlternateHeroSection from "@/components/sections/AlternateHeroSection";
 import CoachingSection from "@/components/sections/CoachingSection";
 import DiscountCodes from "@/components/sections/DiscountCodes";
-import HeroMotion from "@/components/sections/HeroMotion";
+// import HeroMotion from "@/components/sections/HeroMotion";
 import StoryScroll from "@/components/sections/StoryScroll";
 import SupplementLinks from "@/components/sections/SupplementLinks";
 import AboutPage from "@/components/ui/AboutPage";
@@ -14,7 +14,7 @@ export default function Home() {
     <>
       <ScrollProgress />
       {/* <AlternateHeroSection /> */}
-      <HeroMotion />
+      <AlternateHeroSection />
       <DiscountCodes />
       <section id="about">
         <AboutPage />
