@@ -1,10 +1,12 @@
-import { Box } from "@mui/material";
+"use client";
+
+import { motion } from "framer-motion";
 
 type Props = {
   eyebrow: string;
   heading: string;
   subheading?: string;
-  gradientEnd?: string; // kept so old calls don't break, not used
+  gradientEnd?: string; // kept so old calls don't break
   align?: "left" | "center";
 };
 
@@ -16,60 +18,43 @@ export default function SectionHeader({
 }: Props) {
   const center = align === "center";
   return (
-    <Box
-      sx={{
-        mb: 6,
-        textAlign: center ? "center" : "left",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: center ? "center" : "flex-start",
-      }}
+    <div
+      className={`mb-14 flex flex-col ${center ? "items-center text-center" : "items-start"}`}
     >
-      <Box
-        sx={{
-          px: 1.5,
-          py: 0.4,
-          bgcolor: "#c6ff00",
-          color: "#000",
-          fontFamily: "Impact, 'Arial Narrow Bold', sans-serif",
-          letterSpacing: "0.2em",
-          fontSize: 14,
-          textTransform: "uppercase",
-        }}
+      <motion.span
+        initial={{ opacity: 0, x: -30 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true }}
+        className="font-display bg-[#ffc857] px-3 py-1 text-sm tracking-[0.2em] text-black"
       >
         {eyebrow}
-      </Box>
+      </motion.span>
 
-      <Box
-        component="h2"
-        sx={{
-          mt: 2,
-          m: 0,
-          fontFamily: "Impact, 'Arial Narrow Bold', sans-serif",
-          fontWeight: 400,
-          textTransform: "uppercase",
-          lineHeight: 0.95,
-          color: "#fff",
-          fontSize: "clamp(2.6rem, 6vw, 5rem)",
-        }}
-      >
-        {heading}
-      </Box>
+      <span className="mt-3 block overflow-hidden [clip-path:inset(0_-100vw_0_0)]">
+        <motion.h2
+          initial={{ y: "110%" }}
+          whileInView={{ y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="font-display text-[clamp(2.6rem,6vw,5rem)] leading-[0.95] text-white"
+        >
+          {heading}
+        </motion.h2>
+      </span>
 
-      <Box sx={{ mt: 2, width: 90, height: 5, bgcolor: "#c6ff00" }} />
+      <motion.div
+        initial={{ scaleX: 0 }}
+        whileInView={{ scaleX: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.3, duration: 0.6 }}
+        className="mt-4 h-[5px] w-24 origin-left bg-[#ff3b30]"
+      />
 
       {subheading && (
-        <Box
-          sx={{
-            mt: 2.5,
-            maxWidth: 560,
-            color: "rgba(255,255,255,0.65)",
-            fontSize: { xs: 15, md: 17 },
-          }}
-        >
+        <p className="mt-5 max-w-xl text-base text-white/65 md:text-lg">
           {subheading}
-        </Box>
+        </p>
       )}
-    </Box>
+    </div>
   );
 }

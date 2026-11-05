@@ -1,13 +1,13 @@
 import me from "./Images/me.png";
-import trainer from "./Images/trainer.webp";
-import trainerHover from "./Images/trainerhover.webp";
+import trainer from "./Images/trainer.jpg";
+import trainerHover from "./Images/trainerhover.jpg";
 
 const assets = {
   images: {
     logo: me,
     me: me,
-    trainer: trainer,
-    trainerHover: trainerHover,
+    trainer: trainerHover,
+    trainerHover: trainer,
   },
 };
 

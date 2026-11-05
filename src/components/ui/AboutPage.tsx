@@ -1,103 +1,83 @@
 "use client";
 
-import { Box, Container, Typography } from "@mui/material";
-import MotionBackground from "@/components/ui/MotionBackground";
-
-import { about } from "@/data/about";
-import TimelineList from "./TimeLine";
-import SectionHeader from "./SectionHeader";
-import Image from "next/image";
-import assets from "@/assets";
-
 import { useState } from "react";
+import Image from "next/image";
 import {
-  motion,
   AnimatePresence,
+  motion,
   useMotionValue,
   useSpring,
   useTransform,
 } from "framer-motion";
+import assets from "@/assets";
+import { about } from "@/data/about";
+import MotionBackground from "./MotionBackground";
+import SectionHeader from "./SectionHeader";
+import CountUp from "./CountUp";
 
-const LIME = "#c6ff00";
-const DISPLAY = "Impact, 'Arial Narrow Bold', sans-serif";
-const WIPE_EASE = [0.76, 0, 0.24, 1] as const;
+const RED = "#ff3b30";
+const WIPE = [0.76, 0, 0.24, 1] as const;
 
 export default function AboutPage() {
-  const [isHovered, setIsHovered] = useState(false);
+  const [hover, setHover] = useState(false);
+  const [active, setActive] = useState(0);
 
-  // ---- 3D tilt (follows the cursor) ----
   const mx = useMotionValue(0);
   const my = useMotionValue(0);
-  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [7, -7]), {
+  const rotateX = useSpring(useTransform(my, [-0.5, 0.5], [8, -8]), {
     stiffness: 150,
     damping: 15,
   });
-  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-7, 7]), {
+  const rotateY = useSpring(useTransform(mx, [-0.5, 0.5], [-8, 8]), {
     stiffness: 150,
     damping: 15,
   });
 
-  const handleMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const r = e.currentTarget.getBoundingClientRect();
     mx.set((e.clientX - r.left) / r.width - 0.5);
     my.set((e.clientY - r.top) / r.height - 0.5);
   };
 
-  const handleEnter = () => setIsHovered(true);
-
-  const handleLeave = () => {
-    mx.set(0);
-    my.set(0);
-    setIsHovered(false);
-  };
-
   return (
     <MotionBackground className="min-h-screen">
-      <Container maxWidth="lg" sx={{ pt: 20, pb: 8 }} id="about">
+      <div className="mx-auto max-w-6xl px-5 pb-24 pt-32 md:px-8 md:pt-40">
         <SectionHeader eyebrow={about.eyebrow} heading={about.heading} />
 
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              md: "5fr 7fr",
-            },
-            gap: 5,
-            alignItems: "start",
-          }}
-        >
-          <Box>
-            {/* Perspective wrapper so the tilt looks 3D */}
-            <Box sx={{ perspective: "900px" }}>
+        <div className="grid items-start gap-12 md:grid-cols-[5fr_7fr]">
+          {/* LEFT: photo + stats */}
+          <div>
+            <div style={{ perspective: 900 }}>
               <motion.div
-                onMouseEnter={handleEnter}
-                onMouseLeave={handleLeave}
-                onMouseMove={handleMove}
-                animate={{
-                  boxShadow: isHovered
-                    ? `4px 4px 0 ${LIME}`
-                    : `10px 10px 0 ${LIME}`,
-                  x: isHovered ? 3 : 0,
-                  y: isHovered ? 3 : 0,
+                onMouseEnter={() => setHover(true)}
+                onMouseLeave={() => {
+                  mx.set(0);
+                  my.set(0);
+                  setHover(false);
                 }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+                onMouseMove={onMove}
+                onClick={() => setHover((h) => !h)}
+                animate={{
+                  boxShadow: hover ? `4px 4px 0 ${RED}` : `12px 12px 0 ${RED}`,
+                  x: hover ? 4 : 0,
+                  y: hover ? 4 : 0,
+                }}
+                transition={{ duration: 0.3 }}
                 style={{
                   position: "relative",
                   overflow: "hidden",
                   aspectRatio: "4 / 5",
-                  border: `3px solid ${LIME}`,
+                  border: `3px solid ${RED}`,
                   cursor: "pointer",
-                  background: "#111",
+                  background: "#111830",
                   rotateX,
                   rotateY,
                   transformStyle: "preserve-3d",
                 }}
               >
-                {/* Base image (always visible, grayscale) */}
                 <Image
                   src={assets.images.trainerHover}
-                  alt="Trainer"
+                  alt="Santhosh Prem"
                   fill
                   priority
                   sizes="(min-width:900px) 40vw, 100vw"
@@ -108,26 +88,25 @@ export default function AboutPage() {
                   }}
                 />
 
-                {/* Hover image: wipes in from the bottom, in full color */}
                 <motion.div
                   initial={false}
                   animate={{
-                    clipPath: isHovered
+                    clipPath: hover
                       ? "inset(0% 0% 0% 0%)"
                       : "inset(100% 0% 0% 0%)",
                   }}
-                  transition={{ duration: 0.6, ease: WIPE_EASE }}
-                  style={{ position: "absolute", inset: 0 }}
+                  transition={{ duration: 0.6, ease: WIPE }}
+                  className="absolute inset-0"
                 >
                   <motion.div
                     initial={false}
-                    animate={{ scale: isHovered ? 1 : 1.15 }}
-                    transition={{ duration: 0.8, ease: "easeOut" }}
-                    style={{ position: "absolute", inset: 0 }}
+                    animate={{ scale: hover ? 1 : 1.15 }}
+                    transition={{ duration: 0.8 }}
+                    className="absolute inset-0"
                   >
                     <Image
                       src={assets.images.trainer}
-                      alt="Trainer"
+                      alt="Santhosh Prem"
                       fill
                       sizes="(min-width:900px) 40vw, 100vw"
                       style={{
@@ -139,139 +118,147 @@ export default function AboutPage() {
                   </motion.div>
                 </motion.div>
 
-                {/* Lime scan line that travels with the reveal */}
                 <motion.div
                   initial={false}
                   animate={{
-                    bottom: isHovered ? "100%" : "0%",
-                    opacity: isHovered ? 0 : 1,
+                    bottom: hover ? "100%" : "0%",
+                    opacity: hover ? 0 : 1,
                   }}
-                  transition={{ duration: 0.6, ease: WIPE_EASE }}
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    right: 0,
-                    height: 4,
-                    background: LIME,
-                    boxShadow: `0 0 18px ${LIME}`,
-                    pointerEvents: "none",
-                  }}
+                  transition={{ duration: 0.6, ease: WIPE }}
+                  className="pointer-events-none absolute inset-x-0 h-1"
+                  style={{ background: RED, boxShadow: `0 0 18px ${RED}` }}
                 />
 
-                {/* Lime Overlay (fades out on hover so the color photo is clean) */}
                 <motion.div
                   initial={false}
-                  animate={{ opacity: isHovered ? 0 : 0.15 }}
-                  transition={{ duration: 0.4 }}
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: LIME,
-                    mixBlendMode: "multiply",
-                    pointerEvents: "none",
-                  }}
+                  animate={{ opacity: hover ? 0 : 0.2 }}
+                  className="pointer-events-none absolute inset-0 bg-[#ff3b30] mix-blend-multiply"
                 />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent from-60% to-black/90" />
 
-                {/* Bottom Gradient */}
-                <Box
-                  sx={{
-                    position: "absolute",
-                    inset: 0,
-                    background:
-                      "linear-gradient(transparent 60%, rgba(0,0,0,0.9))",
-                    pointerEvents: "none",
-                  }}
-                />
-
-                {/* Image Caption (swaps on hover) */}
-                <Box
-                  sx={{
-                    position: "absolute",
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                    p: 3,
-                    pointerEvents: "none",
-                    overflow: "hidden",
-                  }}
-                >
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 overflow-hidden p-5">
                   <AnimatePresence mode="wait" initial={false}>
-                    <motion.div
-                      key={isHovered ? "hover-caption" : "default-caption"}
+                    <motion.p
+                      key={hover ? "h" : "d"}
                       initial={{ y: 24, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       exit={{ y: -24, opacity: 0 }}
-                      transition={{ duration: 0.25, ease: "easeOut" }}
+                      transition={{ duration: 0.25 }}
+                      className={`font-display text-2xl ${hover ? "text-[#ffc857]" : "text-white"}`}
                     >
-                      <Typography
-                        sx={{
-                          fontFamily: DISPLAY,
-                          textTransform: "uppercase",
-                          fontSize: 24,
-                          color: isHovered ? LIME : "#fff",
-                        }}
-                      >
-                        {isHovered ? "See the real me →" : about.imageCaption}
-                      </Typography>
-                    </motion.div>
+                      {hover ? "See the real me →" : about.imageCaption}
+                    </motion.p>
                   </AnimatePresence>
-                </Box>
+                </div>
               </motion.div>
-            </Box>
+            </div>
 
-            {/* Stats */}
-            <Box
-              sx={{
-                mt: 5,
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 2,
-              }}
-            >
+            <div className="mt-10 grid grid-cols-3 gap-3">
               {about.stats.map((s, i) => (
-                <Box
+                <motion.div
                   key={s.label}
-                  sx={{
-                    p: 2,
-                    border: "1px solid rgba(255,255,255,0.12)",
-                    borderTop: `4px solid ${LIME}`,
-                    bgcolor: "#111",
-                    gridColumn:
-                      i === about.stats.length - 1 && about.stats.length % 2
-                        ? "1 / -1"
-                        : "auto",
-                  }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -6 }}
+                  className="border border-white/10 border-t-4 border-t-[#ffc857] bg-[#111830] p-3 md:p-4"
                 >
-                  <Typography
-                    sx={{
-                      fontFamily: DISPLAY,
-                      fontSize: 38,
-                      lineHeight: 1,
-                      color: LIME,
-                    }}
-                  >
-                    {s.value}
-                  </Typography>
-
-                  <Typography
-                    variant="caption"
-                    sx={{
-                      textTransform: "uppercase",
-                      letterSpacing: "0.12em",
-                      color: "text.secondary",
-                    }}
-                  >
+                  <p className="font-display text-3xl leading-none text-[#ff3b30] md:text-4xl">
+                    <CountUp to={s.to} suffix={s.suffix} />
+                  </p>
+                  <p className="mt-1 text-[10px] uppercase tracking-[0.12em] text-white/60">
                     {s.label}
-                  </Typography>
-                </Box>
+                  </p>
+                </motion.div>
               ))}
-            </Box>
-          </Box>
+            </div>
+          </div>
 
-          {/* Right: Timeline */}
-          <TimelineList items={about.timeline} />
-        </Box>
-      </Container>
+          {/* RIGHT: bio + focus + timeline */}
+          <div>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="border-l-4 border-[#ff3b30] pl-5 text-lg text-white/80 md:text-2xl"
+            >
+              {about.bio}
+            </motion.p>
+
+            <p className="font-display mt-10 text-xl text-[#ffc857]">
+              What I coach
+            </p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              {about.focus.map((f, i) => (
+                <motion.button
+                  key={f.title}
+                  type="button"
+                  onClick={() => setActive(i)}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07 }}
+                  whileHover={{ y: -5 }}
+                  whileTap={{ scale: 0.97 }}
+                  className={`border-2 p-4 text-left transition-colors ${
+                    active === i
+                      ? "border-[#ff3b30] bg-[#ff3b30]/10"
+                      : "border-white/15 hover:border-white/50"
+                  }`}
+                >
+                  <span className="text-3xl">{f.icon}</span>
+                  <p className="font-display mt-2 text-2xl text-white">
+                    {f.title}
+                  </p>
+                  <AnimatePresence initial={false}>
+                    {active === i && (
+                      <motion.p
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden text-sm text-white/65"
+                      >
+                        {f.text}
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              ))}
+            </div>
+
+            <p className="font-display mt-12 text-xl text-[#ffc857]">
+              The road
+            </p>
+            <div className="relative mt-4 pl-8">
+              <motion.div
+                initial={{ scaleY: 0 }}
+                whileInView={{ scaleY: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1.2 }}
+                className="absolute bottom-0 left-2 top-0 w-[3px] origin-top bg-gradient-to-b from-[#ff3b30] to-[#ffc857]/20"
+              />
+              {about.timeline.map((t, i) => (
+                <motion.div
+                  key={t.year}
+                  initial={{ opacity: 0, x: 30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.4 }}
+                  transition={{ delay: i * 0.08 }}
+                  className="group relative mb-6"
+                >
+                  <span className="absolute -left-[30px] top-2 h-3.5 w-3.5 rotate-45 bg-[#ff3b30] shadow-[0_0_14px_rgba(255,59,48,0.7)] transition group-hover:scale-150 group-hover:bg-[#ffc857]" />
+                  <p className="font-display text-2xl text-white transition group-hover:text-[#ffc857]">
+                    <span className="mr-3 text-[#ff3b30]">{t.year}</span>
+                    {t.title}
+                  </p>
+                  <p className="mt-1 text-white/60">{t.text}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </MotionBackground>
   );
 }

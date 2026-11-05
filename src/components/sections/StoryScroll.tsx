@@ -1,178 +1,162 @@
 "use client";
 
-import { useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
+import { useRef, useState } from "react";
+import {
+  AnimatePresence,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+} from "framer-motion";
 import { chapters } from "@/data/story";
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+import ScrambleText from "@/components/ui/ScrambleText";
 
 const N = chapters.length;
 const pad = (n: number) => String(n).padStart(2, "0");
-
-// ECG heartbeat path (10 pulses across a 1000 x 100 box)
-const ECG =
-  "M0 50 " +
-  Array.from({ length: 10 }, (_, i) => {
-    const x = i * 100;
-    return `L${x + 30} 50 L${x + 40} 50 L${x + 48} 12 L${x + 58} 90 L${x + 66} 50 L${x + 100} 50`;
-  }).join(" ");
+const ACCENTS = ["#ff3b30", "#ffc857", "#ff8a3d", "#ff3b30", "#ffc857"];
 
 export default function StoryScroll() {
-  const container = useRef<HTMLDivElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
-  const track = useRef<HTMLDivElement>(null);
-  const ecg = useRef<SVGPathElement>(null);
-  const segs = useRef<(HTMLDivElement | null)[]>([]);
-  const counter = useRef<HTMLSpanElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
+  const [idx, setIdx] = useState(0);
 
-  useGSAP(
-    () => {
-      ScrollTrigger.create({
-        trigger: container.current,
-        start: "top top",
-        end: "bottom bottom",
-        pin: stage.current,
-        pinSpacing: false,
-      });
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end end"],
+  });
 
-      const tl = gsap.timeline({
-        defaults: { ease: "none" },
-        scrollTrigger: {
-          trigger: container.current,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            if (counter.current)
-              counter.current.textContent = pad(
-                Math.round(self.progress * (N - 1)) + 1,
-              );
-          },
-        },
-      });
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    setIdx(Math.min(N - 1, Math.max(0, Math.floor(p * N))));
+  });
 
-      const D = N - 1;
+  const jump = (i: number) => {
+    const el = ref.current;
+    if (!el) return;
+    const total = el.offsetHeight - window.innerHeight;
+    window.scrollTo({
+      top: el.offsetTop + ((i + 0.5) / N) * total,
+      behavior: "smooth",
+    });
+  };
 
-      // horizontal slide
-      tl.to(track.current, { xPercent: (-100 * D) / N, duration: D }, 0);
-
-      // giant numbers drift (parallax)
-      tl.fromTo(".num", { xPercent: 25 }, { xPercent: -25, duration: D }, 0);
-
-      // heartbeat line draws itself
-      tl.fromTo(
-        ecg.current,
-        { strokeDashoffset: 1 },
-        { strokeDashoffset: 0, duration: D },
-        0,
-      );
-
-      // set bars fill one by one
-      segs.current.forEach((el, k) => {
-        if (!el) return;
-        if (k === 0) gsap.set(el, { scaleX: 1 });
-        else tl.fromTo(el, { scaleX: 0 }, { scaleX: 1, duration: 1 }, k - 1);
-      });
-    },
-    { scope: container },
-  );
+  const c = chapters[idx];
+  const accent = ACCENTS[idx % ACCENTS.length];
 
   return (
-    <div
-      ref={container}
-      style={{ height: `${N * 150}vh`, position: "relative" }}
-    >
-      <div
-        ref={stage}
-        className="relative h-screen overflow-hidden bg-[#0a0a0a] text-white"
-      >
-        {/* top bar */}
-        <div className="font-display absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 pt-24 text-sm tracking-widest text-white/60 md:px-12 md:text-lg">
-          <span className="bg-[#c6ff00] px-3 py-1 text-black">The Journey</span>
-          <span>
-            SET{" "}
-            <span ref={counter} className="text-[#c6ff00]">
-              01
-            </span>{" "}
-            / {pad(N)}
+    <div ref={ref} style={{ height: `${N * 100}vh` }} className="relative">
+      <div className="sticky top-0 h-screen overflow-hidden bg-[#0b1020] text-white">
+        {/* chapter glow */}
+        <motion.div
+          className="pointer-events-none absolute inset-0"
+          animate={{
+            background: `radial-gradient(700px circle at 75% 50%, ${accent}33, transparent 65%)`,
+          }}
+          transition={{ duration: 0.8 }}
+        />
+
+        {/* big rolling number */}
+        <div className="pointer-events-none absolute right-[3%] top-1/2 -translate-y-1/2 select-none">
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={idx}
+              initial={{ y: 120, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -120, opacity: 0 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="font-display block text-[clamp(14rem,42vw,40rem)] leading-none text-transparent"
+              style={{ WebkitTextStroke: `2px ${accent}55` }}
+            >
+              {pad(idx + 1)}
+            </motion.span>
+          </AnimatePresence>
+        </div>
+
+        {/* header */}
+        <div className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-5 pt-24 md:px-12">
+          <span className="font-display bg-[#ffc857] px-3 py-1 text-xl text-black">
+            The Journey
+          </span>
+          <span className="font-display text-xl tracking-widest text-white/60">
+            {pad(idx + 1)} / {pad(N)}
           </span>
         </div>
 
-        {/* horizontal track */}
-        <div
-          ref={track}
-          className="flex h-full will-change-transform"
-          style={{ width: `${N * 100}vw` }}
-        >
-          {chapters.map((c, i) => (
-            <div
-              key={c.id}
-              className="relative flex h-full w-screen shrink-0 items-center px-6 md:px-24"
+        {/* rail */}
+        <div className="absolute left-4 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-5 md:left-10 md:flex">
+          {chapters.map((ch, k) => (
+            <button
+              key={ch.id}
+              type="button"
+              onClick={() => jump(k)}
+              aria-label={ch.title}
+              className="group flex items-center gap-3"
             >
-              <span className="num font-display pointer-events-none absolute right-[2%] top-1/2 -translate-y-1/2 select-none text-[clamp(14rem,40vw,38rem)] leading-none text-transparent [-webkit-text-stroke:2px_rgba(255,255,255,0.1)]">
-                {pad(i + 1)}
-              </span>
-
-              <div className="relative max-w-2xl">
-                <p className="font-display inline-block bg-[#c6ff00] px-3 py-1 text-lg text-black">
-                  Set {pad(i + 1)}
-                </p>
-                <h2 className="font-display mt-5 text-[clamp(3.5rem,9vw,9rem)] leading-[0.9] text-white">
-                  {c.title}
-                </h2>
-                <p className="mt-6 max-w-lg border-l-4 border-[#c6ff00] pl-5 text-lg text-white/70 md:text-2xl">
-                  {c.text}
-                </p>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* heartbeat */}
-        <svg
-          viewBox="0 0 1000 100"
-          preserveAspectRatio="none"
-          className="pointer-events-none absolute inset-x-0 bottom-14 z-20 h-24 w-full"
-        >
-          <path
-            d={ECG}
-            fill="none"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth={2}
-            vectorEffect="non-scaling-stroke"
-          />
-          <path
-            ref={ecg}
-            d={ECG}
-            fill="none"
-            stroke="#c6ff00"
-            strokeWidth={3}
-            pathLength={1}
-            strokeDasharray={1}
-            strokeDashoffset={1}
-            vectorEffect="non-scaling-stroke"
-            style={{ filter: "drop-shadow(0 0 6px #c6ff00)" }}
-          />
-        </svg>
-
-        {/* set progress bars */}
-        <div className="absolute inset-x-0 bottom-0 z-30 flex gap-2 px-5 pb-6 md:px-12">
-          {chapters.map((c, k) => (
-            <div key={c.id} className="h-2 flex-1 bg-white/10">
-              <div
-                ref={(el) => {
-                  segs.current[k] = el;
+              <span
+                className="block h-3 w-3 rotate-45 border-2 transition-all duration-300"
+                style={{
+                  borderColor: ACCENTS[k % ACCENTS.length],
+                  background:
+                    k <= idx ? ACCENTS[k % ACCENTS.length] : "transparent",
+                  transform: `rotate(45deg) scale(${k === idx ? 1.6 : 1})`,
                 }}
-                className="h-full origin-left bg-[#c6ff00]"
-                style={{ transform: k === 0 ? "scaleX(1)" : "scaleX(0)" }}
               />
-            </div>
+              <span
+                className={`font-display text-lg transition-all ${
+                  k === idx
+                    ? "translate-x-0 opacity-100"
+                    : "-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-70"
+                }`}
+              >
+                {ch.title}
+              </span>
+            </button>
           ))}
         </div>
+
+        {/* content */}
+        <div className="relative z-20 flex h-full items-center px-6 md:pl-40 md:pr-12">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={c.id}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -40 }}
+              transition={{ duration: 0.45 }}
+              className="max-w-3xl"
+            >
+              <p
+                className="font-display inline-block px-3 py-1 text-xl text-black"
+                style={{ background: accent }}
+              >
+                Chapter {pad(idx + 1)}
+              </p>
+              <h2 className="font-display mt-5 text-[clamp(4rem,11vw,11rem)] leading-[0.85] text-white">
+                <ScrambleText text={c.title} duration={600} />
+              </h2>
+              <p
+                className="mt-6 max-w-lg border-l-4 pl-5 text-lg text-white/75 md:text-2xl"
+                style={{ borderColor: accent }}
+              >
+                {c.text}
+              </p>
+              {idx === N - 1 && (
+                <a
+                  href="#coaching"
+                  className="font-display mt-8 inline-block bg-[#ffc857] px-8 py-4 text-2xl text-black transition hover:-translate-y-1 hover:bg-white"
+                >
+                  Start Coaching →
+                </a>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        {/* progress bar */}
+        <motion.div
+          className="absolute inset-x-0 bottom-0 z-30 h-2 origin-left"
+          style={{
+            scaleX: scrollYProgress,
+            background: "linear-gradient(90deg,#ff3b30,#ffc857)",
+          }}
+        />
       </div>
     </div>
   );

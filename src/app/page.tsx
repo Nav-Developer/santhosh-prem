@@ -1,26 +1,25 @@
+import CoachingSection from "@/components/sections/CoachingSection";
 import HeroMotion from "@/components/sections/HeroMotion";
 import StoryScroll from "@/components/sections/StoryScroll";
+import SupplementLinks from "@/components/sections/SupplementLinks";
 import AboutPage from "@/components/ui/AboutPage";
 import ExperiencePage from "@/components/ui/ExperiencePage";
-import ServicesPage from "@/components/ui/ServicesPage";
+import ScrollProgress from "@/components/ui/ScrollProgress";
 
 export default function Home() {
   return (
     <>
+      <ScrollProgress />
       <HeroMotion />
-      <StoryScroll />
-
       <section id="about">
         <AboutPage />
       </section>
-
+      <StoryScroll />
       <section id="experience">
         <ExperiencePage />
       </section>
-
-      <section id="services">
-        <ServicesPage />
-      </section>
+      <CoachingSection />
+      <SupplementLinks />
     </>
   );
 }

@@ -4,21 +4,20 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import EnquiryDialog from "./EnquiryDialog";
-import { CONTACT_EMAIL, WHATSAPP_NUMBER } from "@/data/constant";
 
-type NavLink = {
-  label: string;
-  href: string;
-  section?: string;
-};
+type NavLink = { label: string; href: string; section?: string };
 
 const links: NavLink[] = [
   { label: "About", href: "/#about", section: "about" },
-  { label: "Experience", href: "/#experience", section: "experience" },
-  { label: "Services", href: "/#services", section: "services" },
+  { label: "Coaching", href: "/#coaching", section: "coaching" },
+  { label: "Shop", href: "/#shop", section: "shop" },
 ];
 
+const JOIN: NavLink = {
+  label: "Join Now",
+  href: "/#coaching",
+  section: "coaching",
+};
 const sectionIds = links.flatMap((l) => (l.section ? [l.section] : []));
 
 export function Nav() {
@@ -28,7 +27,6 @@ export function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeSection, setActiveSection] = useState("");
-  const [enquiryOpen, setEnquiryOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -52,9 +50,8 @@ export function Nav() {
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting && window.scrollY >= 120) {
+          if (entry.isIntersecting && window.scrollY >= 120)
             setActiveSection(entry.target.id);
-          }
         });
       },
       { rootMargin: "-40% 0px -55% 0px", threshold: 0 },
@@ -102,17 +99,17 @@ export function Nav() {
         aria-label="Main navigation"
         className={`flex items-center justify-between border-b-2 px-5 py-3 transition-all duration-300 md:px-10 ${
           scrolled
-            ? "border-[#c6ff00] bg-[#0a0a0a]"
-            : "border-white/10 bg-[#0a0a0a]/60"
+            ? "border-[#ff3b30] bg-[#0b1020]"
+            : "border-white/10 bg-[#0b1020]/60 backdrop-blur"
         }`}
       >
         <Link
           href="/"
           onClick={handleLogo}
-          aria-label="Santhosh Prem  home"
+          aria-label="Santhosh Prem home"
           className="font-display text-2xl text-white"
         >
-          Santhosh Prem <span className="text-[#c6ff00]">.</span>
+          Santhosh Prem<span className="text-[#ff3b30]">.</span>
         </Link>
 
         <ul className="hidden items-center gap-2 md:flex">
@@ -124,15 +121,15 @@ export function Nav() {
                   href={link.href}
                   onClick={(e) => handleClick(e, link)}
                   aria-current={active ? "page" : undefined}
-                  className={`font-display relative block px-4 py-2 text-lg tracking-wide transition-colors hover:text-[#c6ff00] ${
-                    active ? "text-[#c6ff00]" : "text-white/70"
+                  className={`font-display relative block px-4 py-2 text-lg tracking-wide transition-colors hover:text-[#ff3b30] ${
+                    active ? "text-[#ff3b30]" : "text-white/70"
                   }`}
                 >
                   {link.label}
                   {active && (
                     <motion.span
                       layoutId="nav-line"
-                      className="absolute inset-x-3 -bottom-[3px] h-[3px] bg-[#c6ff00]"
+                      className="absolute inset-x-3 -bottom-[3px] h-[3px] bg-[#ff3b30]"
                       transition={{
                         type: "spring",
                         stiffness: 400,
@@ -147,29 +144,13 @@ export function Nav() {
         </ul>
 
         <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => {
-              setOpen(false);
-              setEnquiryOpen(true);
-            }}
-            className="font-display bg-[#c6ff00] px-5 py-2 text-lg text-black transition hover:bg-white"
+          <Link
+            href={JOIN.href}
+            onClick={(e) => handleClick(e, JOIN)}
+            className="font-display bg-[#ff3b30] px-5 py-2 text-lg text-white transition hover:bg-white hover:text-black"
           >
             Join Now
-          </button>
-
-          <EnquiryDialog
-            open={enquiryOpen}
-            onClose={() => setEnquiryOpen(false)}
-            title="Start Your Transformation"
-            subtitle="Tell me your goal. Let's get to work."
-            enquiryLabel="Training Enquiry"
-            defaultSubject=""
-            defaultMessage=""
-            whatsappNumber={WHATSAPP_NUMBER}
-            email={CONTACT_EMAIL}
-            recipientName="Santhosh Prem "
-          />
+          </Link>
 
           <button
             type="button"
@@ -180,19 +161,13 @@ export function Nav() {
             className="flex h-10 w-10 flex-col items-center justify-center gap-1 border-2 border-white/30 md:hidden"
           >
             <span
-              className={`h-0.5 w-5 bg-[#c6ff00] transition-transform ${
-                open ? "translate-y-1.5 rotate-45" : ""
-              }`}
+              className={`h-0.5 w-5 bg-[#ff3b30] transition-transform ${open ? "translate-y-1.5 rotate-45" : ""}`}
             />
             <span
-              className={`h-0.5 w-5 bg-[#c6ff00] transition-opacity ${
-                open ? "opacity-0" : ""
-              }`}
+              className={`h-0.5 w-5 bg-[#ff3b30] transition-opacity ${open ? "opacity-0" : ""}`}
             />
             <span
-              className={`h-0.5 w-5 bg-[#c6ff00] transition-transform ${
-                open ? "-translate-y-1.5 -rotate-45" : ""
-              }`}
+              className={`h-0.5 w-5 bg-[#ff3b30] transition-transform ${open ? "-translate-y-1.5 -rotate-45" : ""}`}
             />
           </button>
         </div>
@@ -206,7 +181,7 @@ export function Nav() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-            className="flex flex-col border-b-2 border-[#c6ff00] bg-[#0a0a0a] md:hidden"
+            className="flex flex-col border-b-2 border-[#ff3b30] bg-[#0b1020] md:hidden"
           >
             {links.map((link) => {
               const active = isActive(link);
@@ -216,7 +191,7 @@ export function Nav() {
                     href={link.href}
                     onClick={(e) => handleClick(e, link)}
                     className={`font-display block px-6 py-4 text-2xl ${
-                      active ? "bg-[#c6ff00] text-black" : "text-white"
+                      active ? "bg-[#ff3b30] text-white" : "text-white"
                     }`}
                   >
                     {link.label}

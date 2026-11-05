@@ -6,6 +6,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
 import StickyCTA from "@/components/layout/StickyCTA";
+import { Big_Shoulders } from "next/font/google";
 
 const bodoni = Bodoni_Moda({ subsets: ["latin"], variable: "--font-bodoni" });
 const montserrat = Montserrat({
@@ -14,13 +15,16 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://Santhosh Prem .site"),
-  title:
-    "Santhosh Prem   | Freelance Full Stack Developer in Coimbatore, India",
-  description:
-    "Freelance full stack developer in Coimbatore. React, NestJS, MongoDB, landing pages, portfolio websites, digital invitations and video editing.",
-  alternates: { canonical: "/" },
+  metadataBase: new URL("http://localhost:3000"),
+  title: "Fitness Influence",
+  description: "Trainer",
 };
+
+const display = Big_Shoulders({
+  subsets: ["latin"],
+  weight: ["800", "900"],
+  variable: "--font-display",
+});
 
 export default function RootLayout({
   children,

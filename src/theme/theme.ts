@@ -4,25 +4,19 @@ const theme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#0a0a0a",
-      light: "#1a1a1a",
-      dark: "#050505",
+      main: "#0b1020",
+      light: "#1a2340",
+      dark: "#070a14",
       contrastText: "#ffffff",
     },
     secondary: {
-      main: "#c6ff00",
-      light: "#d9ff4d",
-      dark: "#9be000",
-      contrastText: "#000000",
+      main: "#ff3b30",
+      light: "#ff6a5e",
+      dark: "#d62a20",
+      contrastText: "#ffffff",
     },
-    background: {
-      default: "#0a0a0a",
-      paper: "#111111",
-    },
-    text: {
-      primary: "#ffffff",
-      secondary: "rgba(255,255,255,0.6)",
-    },
+    background: { default: "#0b1020", paper: "#111830" },
+    text: { primary: "#ffffff", secondary: "rgba(255,255,255,0.6)" },
   },
 });
 
