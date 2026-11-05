@@ -1,24 +1,20 @@
 import type { Metadata } from "next";
-import { Bodoni_Moda, Montserrat } from "next/font/google";
+import { Bodoni_Moda, Montserrat, Big_Shoulders } from "next/font/google";
+
 import ThemeRegistry from "@/theme/ThemeRegistry";
-// import IntroSplash from "@/components/animations/IntroSplash";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
-import StickyCTA from "@/components/layout/StickyCTA";
-import { Big_Shoulders } from "next/font/google";
 
-const bodoni = Bodoni_Moda({ subsets: ["latin"], variable: "--font-bodoni" });
+const bodoni = Bodoni_Moda({
+  subsets: ["latin"],
+  variable: "--font-bodoni",
+});
+
 const montserrat = Montserrat({
   subsets: ["latin"],
   variable: "--font-montserrat",
 });
-
-export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000"),
-  title: "Fitness Influence",
-  description: "Trainer",
-};
 
 const display = Big_Shoulders({
   subsets: ["latin"],
@@ -26,20 +22,27 @@ const display = Big_Shoulders({
   variable: "--font-display",
 });
 
+export const metadata: Metadata = {
+  metadataBase: new URL("https://santhoshprem.fit"),
+  title: "Fitness Influence | Santhosh Prem",
+  description: "Personal fitness training and coaching by Santhosh Prem.",
+};
+
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${bodoni.variable} ${montserrat.variable}`}>
+    <html
+      lang="en"
+      className={`${bodoni.variable} ${montserrat.variable} ${display.variable}`}
+    >
       <body>
         <ThemeRegistry>
-          {/* <IntroSplash /> */}
           <Navbar />
           <main>{children}</main>
           <Footer />
-          {/* <StickyCTA /> */}
         </ThemeRegistry>
       </body>
     </html>
